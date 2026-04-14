@@ -1,0 +1,28 @@
+{
+  "files": [
+    {
+      "path": "${env:MDTVTYCN_DB_PATH}\\CastData.json",
+      "targetPath": "${env:MDTVTYCN_DB_PATH}\\CastData.json",
+      "rules": [
+        {
+          "sourcePath": "$.data[*]._comment",
+          "targetPath": "$.data[*].Name"
+        }
+      ]
+    },
+    {
+      "path": "${env:MDTVTYCN_DB_PATH}\\ItemsData.json",
+      "targetPath": "${env:MDTVTYCN_DB_PATH}\\ItemsData.json",
+      "rules": [
+        {
+          "sourcePath": "$.data[*]._comment",
+          "targetPath": "$.data[*].Name_DE",
+          "ignoreValues": [
+            "UNREAL",
+            "---"
+          ]
+        }
+      ]
+    }
+  ]
+}

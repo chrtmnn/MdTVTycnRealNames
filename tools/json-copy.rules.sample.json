@@ -1,0 +1,18 @@
+{
+  "files": [
+    {
+      "path": "examples/sample.json",
+      "targetPath": "examples/sample.output.json",
+      "rules": [
+        {
+          "sourcePath": "$.person.name",
+          "targetPath": "$.metadata.displayName"
+        },
+        {
+          "sourcePath": "$.items[0].id",
+          "targetPath": "$.summary.primaryItemId"
+        }
+      ]
+    }
+  ]
+}
