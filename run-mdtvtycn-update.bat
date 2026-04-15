@@ -32,7 +32,7 @@ if not exist "%COPY_SCRIPT%" (
   goto :error
 )
 
-for /f %%I in ('powershell -NoProfile -Command "Get-Date -Format ''yyyyMMdd-HHmm''"') do set "BACKUP_TIMESTAMP=%%I"
+for /f "usebackq delims=" %%I in (`powershell -NoProfile -ExecutionPolicy Bypass -Command "Get-Date -Format 'yyyyMMdd-HHmm'"`) do set "BACKUP_TIMESTAMP=%%I"
 if "%BACKUP_TIMESTAMP%"=="" (
   echo Failed to generate backup timestamp.
   goto :error
