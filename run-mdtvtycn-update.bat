@@ -7,13 +7,12 @@ set "BACKUP_SCRIPT=%SCRIPT_DIR%tools\backup-json-sources.ps1"
 set "COPY_SCRIPT=%SCRIPT_DIR%tools\json-copy.ps1"
 set "DEFAULT_DB_PATH=C:\Program Files (x86)\Steam\steamapps\common\Mad Television Tycoon\MadTelevisionTycoon\EXTERN\DATABASE"
 set "MDTVTYCN_DB_PATH=%DEFAULT_DB_PATH%"
-set "BACKUP_FILE=%DEFAULT_DB_PATH%\MdTVTycnDB.backup.tar.gz"
 set "PAUSE_ARG=%~1"
+set "BACKUP_TIMESTAMP="
 
 if not "%~1"=="" (
   if /I not "%~1"=="--no-pause" (
     set "MDTVTYCN_DB_PATH=%~1"
-    set "BACKUP_FILE=%~1\MdTVTycnDB.backup.tar.gz"
     set "PAUSE_ARG=%~2"
   )
 )
@@ -32,6 +31,14 @@ if not exist "%COPY_SCRIPT%" (
   echo JSON copy script not found: "%COPY_SCRIPT%"
   goto :error
 )
+
+for /f %%I in ('powershell -NoProfile -Command "Get-Date -Format ''yyyyMMdd-HHmm''"') do set "BACKUP_TIMESTAMP=%%I"
+if "%BACKUP_TIMESTAMP%"=="" (
+  echo Failed to generate backup timestamp.
+  goto :error
+)
+
+set "BACKUP_FILE=%MDTVTYCN_DB_PATH%\MdTVTycnDB.backup.%BACKUP_TIMESTAMP%.tar.gz"
 
 echo Using MDTVTYCN_DB_PATH=%MDTVTYCN_DB_PATH%
 echo Backup file: %BACKUP_FILE%

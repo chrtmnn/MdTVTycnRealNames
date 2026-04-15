@@ -16,21 +16,20 @@ Als Inspiration für dieses Projekt diente ein [Python-Skript](https://drwolfshe
 von [DrWolfsherz](https://card.drwolfsherz.net/) welches er
 in [seinem Forum](https://drwolfsherz.net/forum/thread/36-real-names-f%C3%BCr-mad-television-tycoon/) zur Verfügung
 stellt. Im Gegensatz zu DrWolfsherz' Lösung wird hier jedoch keine Installation von Python benötigt. Das Skript basiert
-auf MS PowerShell und kann einfach ausgeführt werden. 
+auf MS PowerShell und kann einfach ausgeführt werden.
 
 ## Ausführung
 
 Für einen einfachen Start unter Windows führe `run-mdtvtycn-update.bat` aus.
 
-Das Skript:
+Das Skript führt folgende Schritte aus:
 
-* erstellt ein Backup der originalen JSON-Dateien
-* führt anschließend die JSON-Anpassung aus
-* legt die Backup-Datei als `MdTVTycnDB.backup.tar.gz` direkt im verwendeten Datenbankordner ab
+1. Backup der originalen JSON-Dateien als `MdTVTycnDB.backup.YYYYMMDD-HHMM.tar.gz` direkt im verwendeten Datenbankordner
+2. führt anschließend die JSON-Anpassung aus
 
 Standardmäßig verwendet die Batch-Datei diesen Pfad:
 
-`C:\Program Files (x86)\Steam\steamapps\common\Mad Television Tycoon\MadTelevisionTycoon\EXTERN\DATABASE`
+    C:\Program Files (x86)\Steam\steamapps\common\Mad Television Tycoon\MadTelevisionTycoon\EXTERN\DATABASE
 
 Du kannst diesen Pfad beim Start der Batch-Datei überschreiben:
 
@@ -41,7 +40,7 @@ run-mdtvtycn-update.bat "D:\Games\Mad Television Tycoon\MadTelevisionTycoon\EXTE
 Ohne Pause am Ende:
 
 ```cmd
-run-mdtvtycn-update.bat "D:\Games\Mad Television Tycoon\MadTelevisionTycoon\EXTERN\DATABASE" --no-pause
+run-mdtvtycn-update.bat --no-pause
 ```
 
 Das Skript verwendet:
