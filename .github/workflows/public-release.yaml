@@ -1,0 +1,102 @@
+name: Build ZIP and Publish Release
+
+on:
+  push:
+    branches:
+      - develop
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      prerelease:
+        description: 'Publish as prerelease'
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Determine release type
+        id: rel
+        run: |
+          if [[ "${GITHUB_REF}" == "refs/heads/develop" ]]; then
+            echo "type=rc" >> $GITHUB_OUTPUT
+            echo "prerelease=true" >> $GITHUB_OUTPUT
+          elif [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            echo "type=tag" >> $GITHUB_OUTPUT
+            echo "prerelease=false" >> $GITHUB_OUTPUT
+          elif [[ "${{ inputs.prerelease }}" == "true" ]]; then
+            echo "type=manual-prerelease" >> $GITHUB_OUTPUT
+            echo "prerelease=true" >> $GITHUB_OUTPUT
+          else
+            echo "type=manual" >> $GITHUB_OUTPUT
+            echo "prerelease=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Determine version
+        id: version
+        run: |
+          if [[ ! -f VERSION ]]; then
+            echo "VERSION file not found." >&2
+            exit 1
+          fi
+
+          BASE_VERSION="$(tr -d '[:space:]' < VERSION)"
+          if [[ -z "${BASE_VERSION}" ]]; then
+            echo "VERSION file is empty." >&2
+            exit 1
+          fi
+
+          if [[ "${{ steps.rel.outputs.type }}" == "rc" ]]; then
+            VERSION="${BASE_VERSION}-rc.${GITHUB_RUN_NUMBER}"
+          elif [[ "${{ steps.rel.outputs.type }}" == "tag" ]]; then
+            VERSION="${GITHUB_REF_NAME#v}"
+            if [[ "${VERSION}" != "${BASE_VERSION}" ]]; then
+              echo "Tag version ${VERSION} does not match VERSION file ${BASE_VERSION}." >&2
+              exit 1
+            fi
+          else
+            VERSION="${BASE_VERSION}"
+          fi
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "asset_name=MdTVTycnRealNames-${VERSION}.zip" >> $GITHUB_OUTPUT
+
+      - name: Prepare release folder
+        run: |
+          mkdir -p release/tools
+          cp README.md release/
+          cp run-mdtvtycn-update.bat release/
+          cp json-copy.rules.MdTVTycn.json release/
+          cp tools/backup-json-sources.ps1 release/tools/
+          cp tools/json-copy.ps1 release/tools/          
+
+      - name: Create ZIP
+        run: |
+          cd release
+          zip -r "../${{ steps.version.outputs.asset_name }}" .
+
+      - name: Generate SHA256 checksum
+        run: |
+          sha256sum "${{ steps.version.outputs.asset_name }}" \
+            > "${{ steps.version.outputs.asset_name }}.sha256"
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: Release v${{ steps.version.outputs.version }}
+          prerelease: ${{ steps.rel.outputs.prerelease == 'true' }}
+          generate_release_notes: true
+          files: |
+            ${{ steps.version.outputs.asset_name }}
+            ${{ steps.version.outputs.asset_name }}.sha256
