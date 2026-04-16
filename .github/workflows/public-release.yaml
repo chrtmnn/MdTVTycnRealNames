@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Determine release type
         id: rel
@@ -78,7 +78,8 @@ jobs:
           cp run-mdtvtycn-update.bat release/
           cp json-copy.rules.MdTVTycn.json release/
           cp tools/backup-json-sources.ps1 release/tools/
-          cp tools/json-copy.ps1 release/tools/          
+          cp tools/json-copy.ps1 release/tools/
+          cp tools/README.md release/tools/
 
       - name: Create ZIP
         run: |
@@ -91,12 +92,28 @@ jobs:
             > "${{ steps.version.outputs.asset_name }}.sha256"
 
       - name: Publish release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v${{ steps.version.outputs.version }}
-          name: Release v${{ steps.version.outputs.version }}
-          prerelease: ${{ steps.rel.outputs.prerelease == 'true' }}
-          generate_release_notes: true
-          files: |
-            ${{ steps.version.outputs.asset_name }}
-            ${{ steps.version.outputs.asset_name }}.sha256
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: v${{ steps.version.outputs.version }}
+          RELEASE_NAME: Release v${{ steps.version.outputs.version }}
+          RELEASE_FILE: ${{ steps.version.outputs.asset_name }}
+          RELEASE_CHECKSUM_FILE: ${{ steps.version.outputs.asset_name }}.sha256
+          PRERELEASE: ${{ steps.rel.outputs.prerelease }}
+        run: |
+          ARGS=(
+            "$TAG_NAME"
+            "$RELEASE_FILE"
+            "$RELEASE_CHECKSUM_FILE"
+            --title "$RELEASE_NAME"
+            --generate-notes
+          )
+
+          if gh release view "$TAG_NAME" > /dev/null 2>&1; then
+            gh release delete "$TAG_NAME" --yes
+          fi
+
+          if [[ "${PRERELEASE}" == "true" ]]; then
+            ARGS+=(--prerelease)
+          fi
+
+          gh release create "${ARGS[@]}"
