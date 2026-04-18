@@ -41,8 +41,10 @@ Nach dem Entpacken kannst du unter Windows einfach `run-mdtvtycn-update.bat` aus
 
 Das Skript führt folgende Schritte aus:
 
-1. Backup der originalen JSON-Dateien als `MdTVTycnDB.backup.YYYYMMDD-HHMM.tar.gz` direkt im verwendeten Datenbankordner
+1. Optionales Backup der originalen JSON-Dateien als `MdTVTycnDB.backup.YYYYMMDD-HHMMSS.tar.gz` direkt im verwendeten Datenbankordner
 2. Anschließend Ausführung der JSON-Anpassung
+
+Das Backup wird nur ausgeführt, wenn du `--backup` mitgibst.
 
 Standardmäßig verwendet die Batch-Datei diesen Pfad:
 
@@ -55,6 +57,10 @@ Du kannst diesen Pfad beim Start der Batch-Datei überschreiben:
 Ohne Pause am Ende:
 
     run-mdtvtycn-update.bat --no-pause
+
+Mit Backup:
+
+    run-mdtvtycn-update.bat --backup
 
 Das Skript verwendet:
 
