@@ -1,13 +1,13 @@
-![Release](https://img.shields.io/github/v/release/chrtmnn/MdTVTycnRealNames)
-![Windows](https://img.shields.io/badge/Platform-Windows-blue)
-![PowerShell](https://img.shields.io/badge/PowerShell-5.1-2671BE.svg)
-
 # MdTVTycnRealNames
+
+![Release](https://img.shields.io/github/v/release/chrtmnn/MdTVTycnRealNames)
+![Windows](https://img.shields.io/badge/platform-Windows-blue)
+![PowerShell](https://img.shields.io/badge/powershell-5.1-2671BE.svg)
 
 Echte Namen für Eggcode's **Mad Television Tycoon** (2026)
 
-* https://www.eggcodegames.com/
-* https://store.steampowered.com/app/3565020/Mad_Television_Tycoon/
+* [Eggcode Games](https://www.eggcodegames.com)
+* [Mad Television Tycoon](https://store.steampowered.com/app/3565020/Mad_Television_Tycoon) auf Steam
 
 ## Beschreibung
 
@@ -16,9 +16,9 @@ Namen für Serien, Filme, Werbedeals, Schauspieler und Regisseure. Diese Origina
 einfach wiederherstellen: In den relevanten JSON-Dateien der Spiel-Datenbank, insbesondere `ItemsData.json` und
 `CastData.json`, enthält das Feld `_comment` die deutschen Originalnamen.
 
-Als Inspiration für dieses Projekt diente ein [Python-Skript](https://drwolfsherz.net/file-download/106/) von
-[DrWolfsherz](https://card.drwolfsherz.net/), das er in
-[seinem Forum](https://drwolfsherz.net/forum/thread/36-real-names-f%C3%BCr-mad-television-tycoon/) zur Verfügung
+Als Inspiration für dieses Projekt diente ein [Python-Skript](https://drwolfsherz.net/file-download/106) von
+[DrWolfsherz](https://card.drwolfsherz.net), das er in
+[seinem Forum](https://drwolfsherz.net/forum/thread/36-real-names-f%C3%BCr-mad-television-tycoon) zur Verfügung
 stellt. Im Gegensatz zu DrWolfsherz' Lösung wird hier jedoch keine Installation von Python benötigt. Das Skript basiert
 auf MS PowerShell und lässt sich direkt ausführen.
 
@@ -50,18 +50,14 @@ Standardmäßig verwendet die Batch-Datei diesen Pfad:
 
 Du kannst diesen Pfad beim Start der Batch-Datei überschreiben:
 
-```cmd
-run-mdtvtycn-update.bat "D:\Games\Mad Television Tycoon\MadTelevisionTycoon\EXTERN\DATABASE"
-```
+    run-mdtvtycn-update.bat "D:\Games\Mad Television Tycoon\MadTelevisionTycoon\EXTERN\DATABASE"
 
 Ohne Pause am Ende:
 
-```cmd
-run-mdtvtycn-update.bat --no-pause
-```
+    run-mdtvtycn-update.bat --no-pause
 
 Das Skript verwendet:
 
 * `tools/backup-json-sources.ps1`
 * `tools/json-copy.ps1`
-* `json-copy.rules.MdTVTycn.json`
+* `MdTVTycn.json`

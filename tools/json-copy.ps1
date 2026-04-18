@@ -93,7 +93,7 @@ function Write-JsonTextFile {
     [System.IO.File]::WriteAllText($FilePath, $Content, $Encoding)
 }
 
-function Parse-JsonPath {
+function ConvertFrom-JsonPath {
     param(
         [Parameter(Mandatory = $true)]
         [string]$Path
@@ -201,7 +201,7 @@ function New-ContainerForNextToken {
     return @{}
 }
 
-function Ensure-ListSize {
+function Set-ListSize {
     param(
         [Parameter(Mandatory = $true)]
         [System.Collections.IList]$List,
@@ -338,7 +338,7 @@ function Set-JsonValue {
                 throw "Cannot create path. Expected a list."
             }
 
-            Ensure-ListSize -List $current -Index $token
+                Set-ListSize -List $current -Index $token
             if ($null -eq $current[$token]) {
                 $current[$token] = New-ContainerForNextToken -NextToken $nextToken
             }
@@ -362,7 +362,7 @@ function Set-JsonValue {
             throw "Target path ends with an index, but the target is not a list."
         }
 
-        Ensure-ListSize -List $current -Index $lastToken
+        Set-ListSize -List $current -Index $lastToken
         $current[$lastToken] = $Value
         return
     }
@@ -383,11 +383,11 @@ function Add-JsonMatches {
 
         [object[]]$ResolvedTokens,
 
-        [System.Collections.ArrayList]$Matches
+        [System.Collections.ArrayList]$MatchList
     )
 
     if ($RemainingTokens.Count -eq 0) {
-        [void]$Matches.Add([pscustomobject]@{
+        [void]$MatchList.Add([pscustomobject]@{
             Value = $Current
             ResolvedTokens = $ResolvedTokens
         })
@@ -406,7 +406,7 @@ function Add-JsonMatches {
         }
 
         for ($i = 0; $i -lt $Current.Count; $i++) {
-            Add-JsonMatches -Current $Current[$i] -RemainingTokens $nextTokens -ResolvedTokens ($ResolvedTokens + $i) -Matches $Matches
+            Add-JsonMatches -Current $Current[$i] -RemainingTokens $nextTokens -ResolvedTokens ($ResolvedTokens + $i) -MatchList $MatchList
         }
         return
     }
@@ -420,7 +420,7 @@ function Add-JsonMatches {
             return
         }
 
-        Add-JsonMatches -Current $Current[$token] -RemainingTokens $nextTokens -ResolvedTokens ($ResolvedTokens + $token) -Matches $Matches
+        Add-JsonMatches -Current $Current[$token] -RemainingTokens $nextTokens -ResolvedTokens ($ResolvedTokens + $token) -MatchList $MatchList
         return
     }
 
@@ -432,7 +432,7 @@ function Add-JsonMatches {
         return
     }
 
-    Add-JsonMatches -Current $Current[$token] -RemainingTokens $nextTokens -ResolvedTokens ($ResolvedTokens + $token) -Matches $Matches
+    Add-JsonMatches -Current $Current[$token] -RemainingTokens $nextTokens -ResolvedTokens ($ResolvedTokens + $token) -MatchList $MatchList
 }
 
 function Get-JsonMatches {
@@ -444,9 +444,9 @@ function Get-JsonMatches {
         [object[]]$Tokens
     )
 
-    $matches = New-Object System.Collections.ArrayList
-    Add-JsonMatches -Current $Root -RemainingTokens $Tokens -ResolvedTokens @() -Matches $matches
-    return @($matches)
+    $matchList = New-Object System.Collections.ArrayList
+    Add-JsonMatches -Current $Root -RemainingTokens $Tokens -ResolvedTokens @() -MatchList $matchList
+    return @($matchList)
 }
 
 function Get-WildcardCount {
@@ -578,8 +578,8 @@ function Update-JsonFile {
             throw "Rule for '$SourceFilePath' is missing 'targetPath'."
         }
 
-        $sourceTokens = Parse-JsonPath -Path $rule.sourcePath
-        $targetTokens = Parse-JsonPath -Path $rule.targetPath
+        $sourceTokens = ConvertFrom-JsonPath -Path $rule.sourcePath
+        $targetTokens = ConvertFrom-JsonPath -Path $rule.targetPath
         $ignoredValues = Get-OptionalRuleProperty -Rule $rule -PropertyName "ignoreValues"
         $sourceWildcardCount = Get-WildcardCount -Tokens $sourceTokens
         $targetWildcardCount = Get-WildcardCount -Tokens $targetTokens
@@ -589,13 +589,13 @@ function Update-JsonFile {
         }
 
         if ($sourceWildcardCount -gt 0) {
-            $matches = @(Get-JsonMatches -Root $document -Tokens $sourceTokens)
-            if ($matches.Count -eq 0) {
+            $jsonMatches = @(Get-JsonMatches -Root $document -Tokens $sourceTokens)
+            if ($jsonMatches.Count -eq 0) {
                 Write-Warning "Source path not found: '$($rule.sourcePath)' in '$SourceFilePath'"
                 continue
             }
 
-            foreach ($match in $matches) {
+            foreach ($match in $jsonMatches) {
                 if (Test-IgnoredRuleValue -Value $match.Value -IgnoredValues $ignoredValues) {
                     continue
                 }
@@ -685,9 +685,11 @@ foreach ($fileEntry in $fileEntries) {
         throw "Configured file not found: $resolvedSourceFilePath"
     }
 
+    # Default to in-place updates when no file-level targetPath is configured.
     $resolvedDestinationFilePath = $resolvedSourceFilePath
-    if (-not [string]::IsNullOrWhiteSpace($fileEntry.targetPath)) {
-        $destinationPath = Expand-ConfigEnvironmentVariables -InputText ([string]$fileEntry.targetPath)
+    $targetPath = Get-OptionalRuleProperty -Rule $fileEntry -PropertyName "targetPath"
+    if (-not [string]::IsNullOrWhiteSpace($targetPath)) {
+        $destinationPath = Expand-ConfigEnvironmentVariables -InputText ([string]$targetPath)
         $resolvedDestinationFilePath = Resolve-ConfigPath -ConfigFilePath $RuleFile -ConfiguredPath $destinationPath
     }
 
