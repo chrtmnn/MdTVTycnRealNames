@@ -3,16 +3,19 @@ name: Build ZIP and Publish Release
 on:
   push:
     branches:
-      - develop
+      - main
     tags:
       - 'v*'
   workflow_dispatch:
     inputs:
-      prerelease:
-        description: 'Publish as prerelease'
-        type: boolean
-        required: false
-        default: false
+      mode:
+        description: 'Select release mode'
+        type: choice
+        required: true
+        default: rc
+        options:
+          - rc
+          - release
 
 permissions:
   contents: write
@@ -27,23 +30,29 @@ jobs:
 
       - name: Determine release type
         id: rel
+        shell: bash
         run: |
-          if [[ "${GITHUB_REF}" == "refs/heads/develop" ]]; then
-            echo "type=rc" >> $GITHUB_OUTPUT
-            echo "prerelease=true" >> $GITHUB_OUTPUT
-          elif [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
-            echo "type=tag" >> $GITHUB_OUTPUT
-            echo "prerelease=false" >> $GITHUB_OUTPUT
-          elif [[ "${{ inputs.prerelease }}" == "true" ]]; then
-            echo "type=manual-prerelease" >> $GITHUB_OUTPUT
-            echo "prerelease=true" >> $GITHUB_OUTPUT
+          if [[ "${GITHUB_EVENT_NAME}" == "push" && "${GITHUB_REF}" == "refs/heads/main" ]]; then
+            echo "type=rc" >> "$GITHUB_OUTPUT"
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          elif [[ "${GITHUB_EVENT_NAME}" == "push" && "${GITHUB_REF}" == refs/tags/v* ]]; then
+            echo "type=tag" >> "$GITHUB_OUTPUT"
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          elif [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" && "${{ inputs.mode }}" == "release" ]]; then
+            if [[ "${GITHUB_REF}" != refs/tags/v* ]]; then
+              echo "Stable releases must be dispatched from a v* tag ref." >&2
+              exit 1
+            fi
+            echo "type=tag" >> "$GITHUB_OUTPUT"
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
           else
-            echo "type=manual" >> $GITHUB_OUTPUT
-            echo "prerelease=false" >> $GITHUB_OUTPUT
+            echo "type=rc" >> "$GITHUB_OUTPUT"
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Determine version
         id: version
+        shell: bash
         run: |
           if [[ ! -f VERSION ]]; then
             echo "VERSION file not found." >&2
@@ -58,34 +67,38 @@ jobs:
 
           if [[ "${{ steps.rel.outputs.type }}" == "rc" ]]; then
             VERSION="${BASE_VERSION}-rc.${GITHUB_RUN_NUMBER}"
-          elif [[ "${{ steps.rel.outputs.type }}" == "tag" ]]; then
+            TAG_NAME="rc-${VERSION}"
+          else
             VERSION="${GITHUB_REF_NAME#v}"
             if [[ "${VERSION}" != "${BASE_VERSION}" ]]; then
               echo "Tag version ${VERSION} does not match VERSION file ${BASE_VERSION}." >&2
               exit 1
             fi
-          else
-            VERSION="${BASE_VERSION}"
+            TAG_NAME="v${VERSION}"
           fi
 
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "asset_name=MdTVTycnRealNames-${VERSION}.zip" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag_name=$TAG_NAME" >> "$GITHUB_OUTPUT"
+          echo "asset_name=MdTVTycnRealNames-${VERSION}.zip" >> "$GITHUB_OUTPUT"
 
       - name: Prepare release folder
+        shell: bash
         run: |
           mkdir -p release/tools
           cp README.md release/
           cp run-mdtvtycn-update.bat release/
           cp MdTVTycn.json release/
           cp tools/backup-json-sources.ps1 release/tools/
-          cp tools/json-copy.ps1 release/tools/          
+          cp tools/json-copy.ps1 release/tools/
 
       - name: Create ZIP
+        shell: bash
         run: |
           cd release
           zip -r "../${{ steps.version.outputs.asset_name }}" .
 
       - name: Generate SHA256 checksum
+        shell: bash
         run: |
           sha256sum "${{ steps.version.outputs.asset_name }}" \
             > "${{ steps.version.outputs.asset_name }}.sha256"
@@ -93,11 +106,12 @@ jobs:
       - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG_NAME: v${{ steps.version.outputs.version }}
+          TAG_NAME: ${{ steps.version.outputs.tag_name }}
           RELEASE_NAME: Release v${{ steps.version.outputs.version }}
           RELEASE_FILE: ${{ steps.version.outputs.asset_name }}
           RELEASE_CHECKSUM_FILE: ${{ steps.version.outputs.asset_name }}.sha256
           PRERELEASE: ${{ steps.rel.outputs.prerelease }}
+        shell: bash
         run: |
           ARGS=(
             "$TAG_NAME"
