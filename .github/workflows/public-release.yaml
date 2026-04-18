@@ -76,7 +76,7 @@ jobs:
           mkdir -p release/tools
           cp README.md release/
           cp run-mdtvtycn-update.bat release/
-          cp json-copy.rules.MdTVTycn.json release/
+          cp MdTVTycn.json release/
           cp tools/backup-json-sources.ps1 release/tools/
           cp tools/json-copy.ps1 release/tools/          
 
