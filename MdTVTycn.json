@@ -17,10 +17,16 @@
         {
           "sourcePath": "$.data[*]._comment",
           "targetPath": "$.data[*].Name_DE",
+          "replaceFromMap": "NameDE",
           "ignoreValues": [
             "UNREAL",
             "---"
           ]
+        },
+        {
+          "sourcePath": "$.data[*].Name_DE",
+          "targetPath": "$.data[*].Name_DE",
+          "replaceFromMap": "NameDE"
         }
       ]
     }

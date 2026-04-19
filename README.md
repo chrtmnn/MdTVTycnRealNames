@@ -76,6 +76,11 @@ Das Skript verwendet:
 * `tools/backup-json-sources.ps1`
 * `tools/json-copy.ps1`
 * `MdTVTycn.json`
+* `MdTVTycn.value-maps.json`
+
+In `MdTVTycn.value-maps.json` können optionale Ersetzungen für spezielle Werte gepflegt werden. Die Datei wird beim
+Start automatisch an `json-copy.ps1` übergeben. Regeln, die `replaceFromMap` verwenden, beziehen ihre Werte aus dieser
+zentralen Map-Datei.
 
 ---
 
