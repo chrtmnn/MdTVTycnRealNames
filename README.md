@@ -4,10 +4,22 @@
 ![Windows](https://img.shields.io/badge/platform-Windows-blue)
 ![PowerShell](https://img.shields.io/badge/powershell-5.1-2671BE.svg)
 
-Echte Namen für Eggcode's **Mad Television Tycoon** (2026)
-
-* [Eggcode Games](https://www.eggcodegames.com)
-* [Mad Television Tycoon](https://store.steampowered.com/app/3565020/Mad_Television_Tycoon) auf Steam
+<table>
+  <tr>
+    <td>
+      <img style="min-width:256px" src="/assets/MdTVTycnRealNames.png" alt="MdTVTycnRealNames Logo" width="256" height="256">
+    </td>
+    <td valign="top">
+      <p><strong>Deutsche Originalnamen für Eggcode's <em>Mad Television Tycoon</em> (2026)</strong></p>
+      <p>Einfach entpacken, ausführen, fertig!</p>
+      <p>Links zum Spiel:</p>
+      <ul>
+        <li><a href="https://www.eggcodegames.com">Eggcode Games</a></li>
+        <li><a href="https://store.steampowered.com/app/3565020/Mad_Television_Tycoon">Mad Television Tycoon</a>  auf Steam</li>
+      </ul>
+    </td>
+  </tr>
+</table>
 
 ## Beschreibung
 
@@ -67,3 +79,14 @@ Das Skript verwendet:
 * `tools/backup-json-sources.ps1`
 * `tools/json-copy.ps1`
 * `MdTVTycn.json`
+
+## Disclaimer
+
+Dieses Projekt ist ein inoffizielles Fan- und Modding-Tool und steht in keiner Verbindung zu Eggcode Games oder den
+Entwicklern von Mad Television Tycoon. Es ist weder gesponsert noch unterstützt. Namen, Marken und Inhalte des Spiels
+gehören ihren jeweiligen Rechteinhabern.
+
+Die Nutzung erfolgt auf eigene Verantwortung und nur für eigene, legal erworbene Spielkopien. Ich übernehme keine
+Haftung für Schäden, Datenverlust, kaputte Spielstände oder andere Probleme, die durch die Ausführung der Skripte
+entstehen können. Bitte lege vor der Nutzung ein Backup an. Die Kompatibilität kann sich durch Updates des Spiels oder
+geänderte Dateistrukturen jederzeit ändern.
