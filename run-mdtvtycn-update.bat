@@ -1,5 +1,5 @@
 @echo off
-setlocal
+setlocal EnableExtensions EnableDelayedExpansion
 
 set "SCRIPT_DIR=%~dp0"
 set "RULE_FILE=%SCRIPT_DIR%MdTVTycn.json"
@@ -17,8 +17,6 @@ if /I "%~1"=="--no-pause" (
   set "PAUSE_ARG=--no-pause"
 ) else if /I "%~1"=="--backup" (
   set "BACKUP_ENABLED=true"
-) else if /I "%~1"=="--no-backup" (
-  set "BACKUP_ENABLED=false"
 ) else (
   set "MDTVTYCN_DB_PATH=%~1"
 )
@@ -47,28 +45,23 @@ if /I "%BACKUP_ENABLED%"=="true" (
   )
 
   for /f "usebackq delims=" %%I in (`powershell -NoProfile -ExecutionPolicy Bypass -Command "Get-Date -Format 'yyyyMMdd-HHmmss'"`) do set "BACKUP_TIMESTAMP=%%I"
-  if "%BACKUP_TIMESTAMP%"=="" (
+  if "!BACKUP_TIMESTAMP!"=="" (
     echo Backup-Zeitstempel konnte nicht erzeugt werden.
     goto :error
   )
 
-  set "BACKUP_FILE=%MDTVTYCN_DB_PATH%\MdTVTycnDB.backup.%BACKUP_TIMESTAMP%.tar.gz"
-  echo Backup aktiviert.
-  echo Backup-Datei: %BACKUP_FILE%
+  set "BACKUP_FILE=!MDTVTYCN_DB_PATH!\MdTVTycnDB.backup.!BACKUP_TIMESTAMP!.tar.gz"
   echo Starte Backup...
-  powershell -NoProfile -ExecutionPolicy Bypass -Command "$env:MDTVTYCN_DB_PATH='%MDTVTYCN_DB_PATH%'; & '%BACKUP_SCRIPT%' -RuleFile '%RULE_FILE%' -OutputFile '%BACKUP_FILE%'"
+  powershell -NoProfile -ExecutionPolicy Bypass -Command "$env:MDTVTYCN_DB_PATH='!MDTVTYCN_DB_PATH!'; & '!BACKUP_SCRIPT!' -RuleFile '!RULE_FILE!' -OutputFile '!BACKUP_FILE!'"
   if errorlevel 1 (
     echo Backup fehlgeschlagen. JSON-Aktualisierung wurde nicht gestartet.
     goto :error
   )
 
   echo.
-) else (
-  echo Backup uebersprungen (opt-in nicht gesetzt).
-  echo.
 )
 
-echo Starte JSON-Aktualisierung...
+echo Erstelle aktualisierte JSON-Files...
 powershell -NoProfile -ExecutionPolicy Bypass -Command "$env:MDTVTYCN_DB_PATH='%MDTVTYCN_DB_PATH%'; & '%COPY_SCRIPT%' -RuleFile '%RULE_FILE%' -Indented"
 if errorlevel 1 (
   echo JSON-Aktualisierung fehlgeschlagen.

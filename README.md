@@ -12,8 +12,8 @@ Echte Namen für Eggcode's **Mad Television Tycoon** (2026)
 ## Beschreibung
 
 Vermutlich aus Lizenz- und Urheberrechtsgründen verwendet Mad Television Tycoon leicht abgeänderte Versionen der echten
-Namen für Serien, Filme, Werbedeals, Schauspieler und Regisseure. Diese Originalnamen lassen sich jedoch relativ
-einfach wiederherstellen: In den relevanten JSON-Dateien der Spiel-Datenbank, insbesondere `ItemsData.json` und
+Namen für Serien, Filme, Werbedeals, SchauspielerInnen und RegisseurInnen. Diese Originalnamen lassen sich jedoch
+relativ einfach wiederherstellen: In den relevanten JSON-Dateien der Spiel-Datenbank, insbesondere `ItemsData.json` und
 `CastData.json`, enthält das Feld `_comment` die deutschen Originalnamen.
 
 Als Inspiration für dieses Projekt diente ein [Python-Skript](https://drwolfsherz.net/file-download/106) von
