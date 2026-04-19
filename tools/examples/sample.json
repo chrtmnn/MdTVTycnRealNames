@@ -1,6 +1,7 @@
 {
   "person": {
-    "name": "Alice"
+    "name": "Alice",
+    "favoriteShow": "Wheel of Fortune"
   },
   "items": [
     {

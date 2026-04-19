@@ -2,6 +2,8 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$RuleFile,
 
+    [string]$ValueMapFile,
+
     [switch]$Indented,
 
     [switch]$WhatIf
@@ -549,6 +551,73 @@ function Get-OptionalRuleProperty {
     return $property.Value
 }
 
+function Get-ValueMapLookupTable {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$MapName,
+
+        [Parameter(Mandatory = $true)]
+        $ValueMapConfig
+    )
+
+    $namedMap = $ValueMapConfig.PSObject.Properties[$MapName]
+    if ($null -eq $namedMap) {
+        throw "Value map '$MapName' not found in the configured value map file."
+    }
+
+    if ($namedMap.Value -isnot [System.Collections.IDictionary] -and $namedMap.Value -isnot [pscustomobject]) {
+        throw "Value map '$MapName' in the configured value map file must be a JSON object."
+    }
+
+    return $namedMap.Value
+}
+
+function Resolve-RuleOutputValue {
+    param(
+        [Parameter(Mandatory = $true)]
+        $Rule,
+
+        [Parameter(Mandatory = $true)]
+        $InputValue,
+
+        $ValueMapConfig
+    )
+
+    $mapName = Get-OptionalRuleProperty -Rule $Rule -PropertyName "replaceFromMap"
+    if ([string]::IsNullOrWhiteSpace($mapName)) {
+        return $InputValue
+    }
+
+    if ($null -eq $ValueMapConfig) {
+        throw "Rule with replaceFromMap '$mapName' requires -ValueMapFile."
+    }
+
+    $lookupTable = Get-ValueMapLookupTable -MapName ([string]$mapName) -ValueMapConfig $ValueMapConfig
+    if ($null -eq $InputValue) {
+        return $InputValue
+    }
+
+    $lookupKey = [string]$InputValue
+    if ($lookupTable -is [System.Collections.IDictionary]) {
+        if ($lookupTable.Contains($lookupKey)) {
+            return $lookupTable[$lookupKey]
+        }
+
+        return $InputValue
+    }
+
+    if ([string]::IsNullOrEmpty($lookupKey)) {
+        return $InputValue
+    }
+
+    $mappedProperty = $lookupTable.PSObject.Properties | Where-Object { $_.Name -eq $lookupKey } | Select-Object -First 1
+    if ($null -ne $mappedProperty) {
+        return $mappedProperty.Value
+    }
+
+    return $InputValue
+}
+
 function Update-JsonFile {
     param(
         [Parameter(Mandatory = $true)]
@@ -559,6 +628,8 @@ function Update-JsonFile {
 
         [Parameter(Mandatory = $true)]
         [object[]]$Rules,
+
+        $ValueMapConfig,
 
         [switch]$UseIndentedFormatting,
 
@@ -600,8 +671,9 @@ function Update-JsonFile {
                     continue
                 }
 
+                $outputValue = Resolve-RuleOutputValue -Rule $rule -InputValue $match.Value -ValueMapConfig $ValueMapConfig
                 $resolvedTargetTokens = Resolve-TargetTokens -SourceTemplateTokens $sourceTokens -TemplateTokens $targetTokens -ResolvedSourceTokens $match.ResolvedTokens
-                Set-JsonValue -Root $document -Tokens $resolvedTargetTokens -Value $match.Value
+                Set-JsonValue -Root $document -Tokens $resolvedTargetTokens -Value $outputValue
                 $changed = $true
             }
             continue
@@ -618,7 +690,8 @@ function Update-JsonFile {
             continue
         }
 
-        Set-JsonValue -Root $document -Tokens $targetTokens -Value $result.Value
+        $outputValue = Resolve-RuleOutputValue -Rule $rule -InputValue $result.Value -ValueMapConfig $ValueMapConfig
+        Set-JsonValue -Root $document -Tokens $targetTokens -Value $outputValue
         $changed = $true
     }
 
@@ -662,7 +735,21 @@ if (-not (Test-Path -LiteralPath $RuleFile -PathType Leaf)) {
     throw "Rule file not found: $RuleFile"
 }
 
-$ruleConfig = Get-Content -LiteralPath $RuleFile -Raw | ConvertFrom-Json
+$resolvedValueMapFilePath = $null
+$valueMapConfig = $null
+if (-not [string]::IsNullOrWhiteSpace($ValueMapFile)) {
+    $expandedValueMapPath = Expand-ConfigEnvironmentVariables -InputText $ValueMapFile
+    $resolvedValueMapFilePath = Resolve-ConfigPath -ConfigFilePath $RuleFile -ConfiguredPath $expandedValueMapPath
+    if (-not (Test-Path -LiteralPath $resolvedValueMapFilePath -PathType Leaf)) {
+        throw "Value map file not found: $resolvedValueMapFilePath"
+    }
+
+    $valueMapFileContent = Read-JsonTextFile -FilePath $resolvedValueMapFilePath
+    $valueMapConfig = $valueMapFileContent.Content | ConvertFrom-Json
+}
+
+$ruleFileContent = Read-JsonTextFile -FilePath $RuleFile
+$ruleConfig = $ruleFileContent.Content | ConvertFrom-Json
 $fileEntries = @($ruleConfig.files)
 if ($fileEntries.Count -eq 0) {
     throw "The rule file does not contain any file entries."
@@ -693,7 +780,7 @@ foreach ($fileEntry in $fileEntries) {
         $resolvedDestinationFilePath = Resolve-ConfigPath -ConfigFilePath $RuleFile -ConfiguredPath $destinationPath
     }
 
-    if (Update-JsonFile -SourceFilePath $resolvedSourceFilePath -DestinationFilePath $resolvedDestinationFilePath -Rules $rules -UseIndentedFormatting:$Indented -PreviewOnly:$WhatIf) {
+    if (Update-JsonFile -SourceFilePath $resolvedSourceFilePath -DestinationFilePath $resolvedDestinationFilePath -Rules $rules -ValueMapConfig $valueMapConfig -UseIndentedFormatting:$Indented -PreviewOnly:$WhatIf) {
         $processed++
     }
 }

@@ -9,6 +9,11 @@
           "targetPath": "$.metadata.displayName"
         },
         {
+          "sourcePath": "$.person.favoriteShow",
+          "targetPath": "$.metadata.favoriteShowDe",
+          "replaceFromMap": "commentTranslations"
+        },
+        {
           "sourcePath": "$.items[0].id",
           "targetPath": "$.summary.primaryItemId"
         }
