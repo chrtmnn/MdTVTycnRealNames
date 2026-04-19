@@ -6,11 +6,8 @@
 
 <table>
   <tr>
-    <td>
-      <img style="min-width:256px" src="/assets/MdTVTycnRealNames.png" alt="MdTVTycnRealNames Logo" width="256" height="256">
-    </td>
-    <td valign="top">
-      <p><strong>Deutsche Originalnamen für Eggcode's <em>Mad Television Tycoon</em> (2026)</strong></p>
+    <td valign="top"><img style="min-width:192px" src="/assets/MdTVTycnRealNames.png" alt="MdTVTycnRealNames Logo" width="192" height="192"></td>
+    <td valign="top"><strong>Deutsche Originalnamen für Eggcode's Mad Television Tycoon (2026)</strong>
       <p>Einfach entpacken, ausführen, fertig!</p>
       <p>Links zum Spiel:</p>
       <ul>
@@ -21,7 +18,7 @@
   </tr>
 </table>
 
-## Beschreibung
+## 📜 Beschreibung
 
 Vermutlich aus Lizenz- und Urheberrechtsgründen verwendet Mad Television Tycoon leicht abgeänderte Versionen der echten
 Namen für Serien, Filme, Werbedeals, SchauspielerInnen und RegisseurInnen. Diese Originalnamen lassen sich jedoch
@@ -37,7 +34,7 @@ auf MS PowerShell und lässt sich direkt ausführen.
 Die Anpassungen funktionieren auch mit bereits vorhandenen Savegames. Da die Daten im dafür von den Entwicklern
 vorgesehenen `MOD`-Ordner abgelegt werden. Es werden keine Originaldateien oder Spielstanddateien geändert.
 
-## Download
+## 💾 Download
 
 Die aktuelle Version steht als GitHub-Release bereit:
 
@@ -46,7 +43,7 @@ Die aktuelle Version steht als GitHub-Release bereit:
 Lade das aktuelle Release herunter und entpacke das ZIP-Archiv anschließend in einen beliebigen Ordner. Danach kannst
 du die enthaltene Batch-Datei direkt ausführen.
 
-## Ausführung
+## 🚀 Ausführung
 
 Nach dem Entpacken kannst du unter Windows einfach `run-mdtvtycn-update.bat` ausführen.
 
@@ -80,13 +77,15 @@ Das Skript verwendet:
 * `tools/json-copy.ps1`
 * `MdTVTycn.json`
 
-## Disclaimer
+---
 
-Dieses Projekt ist ein inoffizielles Fan- und Modding-Tool und steht in keiner Verbindung zu Eggcode Games oder den
+#### _Disclaimer_
+
+_Dieses Projekt ist ein inoffizielles Fan- und Modding-Tool und steht in keiner Verbindung zu Eggcode Games oder den
 Entwicklern von Mad Television Tycoon. Es ist weder gesponsert noch unterstützt. Namen, Marken und Inhalte des Spiels
-gehören ihren jeweiligen Rechteinhabern.
+gehören ihren jeweiligen Rechteinhabern._
 
-Die Nutzung erfolgt auf eigene Verantwortung und nur für eigene, legal erworbene Spielkopien. Ich übernehme keine
+_Die Nutzung erfolgt auf eigene Verantwortung und nur für eigene, legal erworbene Spielkopien. Ich übernehme keine
 Haftung für Schäden, Datenverlust, kaputte Spielstände oder andere Probleme, die durch die Ausführung der Skripte
 entstehen können. Bitte lege vor der Nutzung ein Backup an. Die Kompatibilität kann sich durch Updates des Spiels oder
-geänderte Dateistrukturen jederzeit ändern.
+geänderte Dateistrukturen jederzeit ändern._
