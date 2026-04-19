@@ -22,9 +22,8 @@ Als Inspiration für dieses Projekt diente ein [Python-Skript](https://drwolfshe
 stellt. Im Gegensatz zu DrWolfsherz' Lösung wird hier jedoch keine Installation von Python benötigt. Das Skript basiert
 auf MS PowerShell und lässt sich direkt ausführen.
 
-Die Anpassungen funktionieren auch mit bereits vorhandenen Savegames. Da lediglich die Namen in den JSON-Daten der
-Spieldatenbank angepasst werden und keine Spielstanddateien verändert werden, können laufende Spielstände in der Regel
-ohne Neustart oder Neuinitialisierung weitergespielt werden.
+Die Anpassungen funktionieren auch mit bereits vorhandenen Savegames. Da die Daten im dafür von den Entwicklern
+vorgesehenen `MOD`-Ordner abgelegt werden. Es werden keine Originaldateien oder Spielstanddateien geändert.
 
 ## Download
 
@@ -41,7 +40,8 @@ Nach dem Entpacken kannst du unter Windows einfach `run-mdtvtycn-update.bat` aus
 
 Das Skript führt folgende Schritte aus:
 
-1. Optionales Backup der originalen JSON-Dateien als `MdTVTycnDB.backup.YYYYMMDD-HHMMSS.tar.gz` direkt im verwendeten Datenbankordner
+1. Optionales Backup der originalen JSON-Dateien als `MdTVTycnDB.backup.YYYYMMDD-HHMMSS.tar.gz` direkt im verwendeten
+   Datenbankordner
 2. Anschließend Ausführung der JSON-Anpassung
 
 Das Backup wird nur ausgeführt, wenn du `--backup` mitgibst.
