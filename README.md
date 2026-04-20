@@ -4,12 +4,20 @@
 ![Windows](https://img.shields.io/badge/platform-Windows-blue)
 ![PowerShell](https://img.shields.io/badge/powershell-5.1-2671BE.svg)
 
-<table>
+<table border="0px">
   <tr>
-    <td valign="top"><img style="min-width:192px" src="/assets/MdTVTycnRealNames.png" alt="MdTVTycnRealNames Logo" width="192" height="192"></td>
-    <td valign="top"><strong>Deutsche Originalnamen für Eggcode's Mad Television Tycoon (2026)</strong>
+    <td rowspan="2" valign="top"><img style="min-width:192px" src="/assets/MdTVTycnRealNames.png" alt="MdTVTycnRealNames Logo" width="192" height="192"></td>
+    <td valign="top">
+      <strong>Deutsche Originalnamen für Mad Television Tycoon</strong> (2026)
+      <ul>
+        <li>Link zum <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3709421607">Steam Guide</a></li>
+      </ul>
       <p>Einfach entpacken, ausführen, fertig!</p>
-      <p>Links zum Spiel:</p>
+    </td>
+  </tr>
+  <tr>
+    <td valign="top">
+      <strong>Mad Television Tycoon</strong> (2026)
       <ul>
         <li><a href="https://www.eggcodegames.com">Eggcode Games</a></li>
         <li><a href="https://store.steampowered.com/app/3565020/Mad_Television_Tycoon">Mad Television Tycoon</a>  auf Steam</li>
@@ -31,7 +39,7 @@ Als Inspiration für dieses Projekt diente ein [Python-Skript](https://drwolfshe
 stellt. Im Gegensatz zu DrWolfsherz' Lösung wird hier jedoch keine Installation von Python benötigt. Das Skript basiert
 auf MS PowerShell und lässt sich direkt ausführen.
 
-Die Anpassungen funktionieren auch mit bereits vorhandenen Savegames. Da die Daten im dafür von den Entwicklern
+Die Anpassungen funktionieren auch mit bereits vorhandenen Savegames, da die Daten im dafür von den Entwicklern
 vorgesehenen `MOD`-Ordner abgelegt werden. Es werden keine Originaldateien oder Spielstanddateien geändert.
 
 ## 💾 Download
