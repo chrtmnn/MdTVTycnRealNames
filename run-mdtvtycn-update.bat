@@ -3,6 +3,7 @@ setlocal EnableExtensions EnableDelayedExpansion
 
 set "SCRIPT_DIR=%~dp0"
 set "RULE_FILE=%SCRIPT_DIR%MdTVTycn.json"
+set "VALUE_MAP_FILE=%SCRIPT_DIR%MdTVTycn.value-maps.json"
 set "BACKUP_SCRIPT=%SCRIPT_DIR%tools\backup-json-sources.ps1"
 set "COPY_SCRIPT=%SCRIPT_DIR%tools\json-copy.ps1"
 set "DEFAULT_DB_PATH=C:\Program Files (x86)\Steam\steamapps\common\Mad Television Tycoon\MadTelevisionTycoon\EXTERN\DATABASE"
@@ -35,6 +36,11 @@ if not exist "%COPY_SCRIPT%" (
   goto :error
 )
 
+if not exist "%VALUE_MAP_FILE%" (
+  echo Value-Map-Datei nicht gefunden: "%VALUE_MAP_FILE%"
+  goto :error
+)
+
 echo Verwende MDTVTYCN_DB_PATH=%MDTVTYCN_DB_PATH%
 echo.
 
@@ -62,7 +68,7 @@ if /I "%BACKUP_ENABLED%"=="true" (
 )
 
 echo Erstelle aktualisierte JSON-Files...
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$env:MDTVTYCN_DB_PATH='%MDTVTYCN_DB_PATH%'; & '%COPY_SCRIPT%' -RuleFile '%RULE_FILE%' -Indented"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$env:MDTVTYCN_DB_PATH='%MDTVTYCN_DB_PATH%'; & '%COPY_SCRIPT%' -RuleFile '%RULE_FILE%' -ValueMapFile '%VALUE_MAP_FILE%' -Indented"
 if errorlevel 1 (
   echo JSON-Aktualisierung fehlgeschlagen.
   goto :error
