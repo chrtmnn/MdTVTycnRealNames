@@ -84,11 +84,12 @@ jobs:
       - name: Prepare release folder
         shell: bash
         run: |
-          mkdir -p release/tools
+          mkdir -p release/tools release/assets
           cp README.md release/
           cp run-mdtvtycn-update.bat release/
           cp MdTVTycn.json release/
           cp MdTVTycn.value-maps.json release/
+          cp assets/MdTVTycnRealNames192.png release/assets/
           cp tools/backup-json-sources.ps1 release/tools/
           cp tools/json-copy.ps1 release/tools/
 

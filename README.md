@@ -4,27 +4,19 @@
 ![Windows](https://img.shields.io/badge/platform-Windows-blue)
 ![PowerShell](https://img.shields.io/badge/powershell-5.1-2671BE.svg)
 
-<table border="0px">
-  <tr>
-    <td rowspan="2" valign="top"><img style="min-width:192px" src="/assets/MdTVTycnRealNames.png" alt="MdTVTycnRealNames Logo" width="192" height="192"></td>
-    <td valign="top">
-      <strong>Deutsche Originalnamen für Mad Television Tycoon</strong> (2026)
-      <ul>
-        <li>Link zum <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3709421607">Steam Guide</a></li>
-      </ul>
-      <p>Einfach entpacken, ausführen, fertig!</p>
-    </td>
-  </tr>
-  <tr>
-    <td valign="top">
-      <strong>Mad Television Tycoon</strong> (2026)
-      <ul>
-        <li><a href="https://www.eggcodegames.com">Eggcode Games</a></li>
-        <li><a href="https://store.steampowered.com/app/3565020/Mad_Television_Tycoon">Mad Television Tycoon</a>  auf Steam</li>
-      </ul>
-    </td>
-  </tr>
-</table>
+<img style="float:right;margin-left:1em" src="/assets/MdTVTycnRealNames192.png" alt="MdTVTycnRealNames Logo">
+
+**Deutsche Originalnamen für Mad Television Tycoon**
+
+Installationsfreies Tool zur Integration der Originalnamen von Filmen, Serien, etc. in Eggcode's **Mad Television
+Tycoon** (2026). Einfach entpacken, ausführen, fertig!
+
+* Link zum zugehörigen [Steam Guide](https://steamcommunity.com/sharedfiles/filedetails/?id=3709421607)
+
+**Mad Television Tycoon**
+
+* [Eggcode Games](https://www.eggcodegames.com)
+* [Mad Television Tycoon](https://store.steampowered.com/app/3565020/Mad_Television_Tycoon) auf Steam
 
 ## 📜 Beschreibung
 
@@ -78,6 +70,22 @@ Ohne Pause am Ende:
 Mit Backup:
 
     run-mdtvtycn-update.bat --backup
+
+Ohne eingerückte JSON-Ausgabe:
+
+    run-mdtvtycn-update.bat --no-indent
+
+### Parameter
+
+    run-mdtvtycn-update.bat [PFAD_ZUR_DATENBANK] [--backup] [--no-pause] [--no-indent] [--help]
+
+| Parameter                       | Beschreibung                                                                                           |
+|---------------------------------|--------------------------------------------------------------------------------------------------------|
+| `"PFAD_ZUR_DATENBANK"`          | Optionaler Pfad zum `EXTERN\DATABASE`-Ordner. Ohne Angabe wird der Standard-Steam-Pfad verwendet.      |
+| `--backup`                      | Erstellt vor der JSON-Anpassung ein Backup der originalen Quelldateien im verwendeten Datenbankordner. |
+| `--no-pause`                    | Beendet das Skript ohne `pause` am Ende. Praktisch für automatisierte Aufrufe.                         |
+| `--no-indent`, `--noIndent`     | Schreibt die aktualisierten JSON-Dateien kompakt ohne eingerückte Formatierung.                        |
+| `--help`, `--hilfe`, `-h`, `/?` | Zeigt die Hilfe zum Batch-Skript an und beendet das Skript ohne Änderungen.                            |
 
 Das Skript verwendet:
 
