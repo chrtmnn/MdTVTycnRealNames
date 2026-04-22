@@ -11,6 +11,7 @@ set "MDTVTYCN_DB_PATH=%DEFAULT_DB_PATH%"
 set "PAUSE_ARG=%~1"
 set "BACKUP_ENABLED=false"
 set "BACKUP_TIMESTAMP="
+set "INDENT_ARG=-Indented"
 
 :parse_args
 if "%~1"=="" goto :args_done
@@ -18,6 +19,18 @@ if /I "%~1"=="--no-pause" (
   set "PAUSE_ARG=--no-pause"
 ) else if /I "%~1"=="--backup" (
   set "BACKUP_ENABLED=true"
+) else if /I "%~1"=="--help" (
+  goto :print_help
+) else if /I "%~1"=="--hilfe" (
+  goto :print_help
+) else if /I "%~1"=="-h" (
+  goto :print_help
+) else if /I "%~1"=="/?" (
+  goto :print_help
+) else if /I "%~1"=="--no-indent" (
+  set "INDENT_ARG="
+) else if /I "%~1"=="--noIndent" (
+  set "INDENT_ARG="
 ) else (
   set "MDTVTYCN_DB_PATH=%~1"
 )
@@ -68,7 +81,7 @@ if /I "%BACKUP_ENABLED%"=="true" (
 )
 
 echo Erstelle aktualisierte JSON-Files...
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$env:MDTVTYCN_DB_PATH='%MDTVTYCN_DB_PATH%'; & '%COPY_SCRIPT%' -RuleFile '%RULE_FILE%' -ValueMapFile '%VALUE_MAP_FILE%' -Indented"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$env:MDTVTYCN_DB_PATH='%MDTVTYCN_DB_PATH%'; & '%COPY_SCRIPT%' -RuleFile '%RULE_FILE%' -ValueMapFile '%VALUE_MAP_FILE%' %INDENT_ARG%"
 if errorlevel 1 (
   echo JSON-Aktualisierung fehlgeschlagen.
   goto :error
@@ -77,6 +90,24 @@ if errorlevel 1 (
 echo.
 echo Erfolgreich abgeschlossen.
 goto :end
+
+:print_help
+echo Verwendung:
+echo   run-mdtvtycn-update.bat [PFAD_ZUR_DATENBANK] [--backup] [--no-pause] [--no-indent] [--help]
+echo.
+echo Parameter:
+echo   PFAD_ZUR_DATENBANK  Optionaler Pfad zum EXTERN\DATABASE-Ordner.
+echo   --backup            Erstellt vor der Anpassung ein Backup der Quelldateien.
+echo   --no-pause          Beendet das Skript ohne Pause am Ende.
+echo   --no-indent         Schreibt JSON kompakt ohne eingerückte Formatierung.
+echo   --noIndent          Alias fuer --no-indent.
+echo   --help, --hilfe     Zeigt diese Hilfe an.
+echo   -h, /?              Zeigt diese Hilfe an.
+echo.
+echo Standard-Datenbankpfad:
+echo   %DEFAULT_DB_PATH%
+set "EXIT_CODE=0"
+goto :exit
 
 :error
 set "EXIT_CODE=1"
