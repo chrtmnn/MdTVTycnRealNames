@@ -50,6 +50,23 @@ function Expand-ConfigEnvironmentVariables {
     ))
 }
 
+function Get-OptionalFileEntryProperty {
+    param(
+        [Parameter(Mandatory = $true)]
+        [psobject]$FileEntry,
+
+        [Parameter(Mandatory = $true)]
+        [string]$PropertyName
+    )
+
+    $property = $FileEntry.PSObject.Properties[$PropertyName]
+    if ($null -eq $property) {
+        return $null
+    }
+
+    return $property.Value
+}
+
 function Get-ArchiveEntryPath {
     param(
         [Parameter(Mandatory = $true)]
@@ -97,10 +114,16 @@ foreach ($fileEntry in $fileEntries) {
         throw "Each file entry must contain 'path'."
     }
 
-    $sourcePath = Expand-ConfigEnvironmentVariables -InputText ([string]$fileEntry.path)
+    $configuredPath = [string]$fileEntry.path
+    $configuredTargetPath = Get-OptionalFileEntryProperty -FileEntry $fileEntry -PropertyName "targetPath"
+    if (-not [string]::IsNullOrWhiteSpace($configuredTargetPath)) {
+        $configuredPath = [string]$configuredTargetPath
+    }
+
+    $sourcePath = Expand-ConfigEnvironmentVariables -InputText $configuredPath
     $resolvedSourceFilePath = Resolve-ConfigPath -ConfigFilePath $RuleFile -ConfiguredPath $sourcePath
     if (-not (Test-Path -LiteralPath $resolvedSourceFilePath -PathType Leaf)) {
-        throw "Configured file not found: $resolvedSourceFilePath"
+        throw "Configured backup source not found: $resolvedSourceFilePath"
     }
 
     if ($seenPaths.Add($resolvedSourceFilePath)) {

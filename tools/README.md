@@ -118,8 +118,8 @@ Expected output file:
 
 ## backup-json-sources.ps1
 
-This script creates a `tar.gz` archive containing all original files referenced in `files[].path`.
-Configured `targetPath` values are ignored.
+This script creates a `tar.gz` archive containing one file per entry in `files[]`.
+If `targetPath` is configured for an entry, that file is backed up; otherwise `path` is used.
 
 Example:
 
@@ -137,6 +137,6 @@ Parameters:
 
 Behavior:
 
-* only original source files from `path` are included
+* backup source is `targetPath` when configured, otherwise `path`
 * duplicate source files are added only once
-* relative archive paths match the configured relative `path` values where possible
+* relative archive paths match the selected configured backup path where possible
