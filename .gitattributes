@@ -1,0 +1,44 @@
+# Im Repository und beim Auschecken einheitlich LF - unabhaengig davon, auf
+# welchem System geklont wird. Ersetzt die Abhaengigkeit von core.autocrlf.
+* text=auto eol=lf
+
+# Windows-Skripte brauchen CRLF, sonst startet die Shell sie nicht.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Shell-Skripte immer LF - laufen spaeter in Containern und WSL.
+*.sh text eol=lf
+
+# Binaerdateien nie anfassen und nicht diffen.
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.webp binary
+*.bmp  binary
+*.pdf  binary
+*.mp3  binary
+*.wav  binary
+*.ogg  binary
+*.mp4  binary
+*.webm binary
+*.woff binary
+*.woff2 binary
+*.ttf  binary
+*.otf  binary
+*.eot  binary
+*.zip  binary
+*.gz   binary
+*.7z   binary
+*.rar  binary
+*.mdb  binary
+*.db   binary
+*.sqlite binary
+*.glb  binary
+*.gltf binary
+*.blend binary
+*.psd  binary
+*.xlsx binary
+*.docx binary
