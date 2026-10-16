@@ -257,6 +257,30 @@ function Expand-ConfigEnvironmentVariables {
     ))
 }
 
+function Remove-JsonTrailingCommas {
+    param(
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
+        [string]$Content
+    )
+
+    # The game data may contain trailing commas (e.g. "...},\n]"), which the
+    # game tolerates but JavaScriptSerializer rejects. String literals are
+    # matched first so commas inside them are left untouched.
+    return [regex]::Replace(
+        $Content,
+        '"(?:[^"\\]|\\.)*"|,(?=\s*[\]}])',
+        [System.Text.RegularExpressions.MatchEvaluator] {
+            param($match)
+            if ($match.Value -eq ",") {
+                return ""
+            }
+
+            return $match.Value
+        }
+    )
+}
+
 function ConvertTo-JsonLiteral {
     param(
         [Parameter(Mandatory = $true)]
@@ -509,25 +533,28 @@ function Resolve-TargetTokens {
 function Test-IgnoredRuleValue {
     param(
         $Value,
-        $IgnoredValues
+        $IgnoredValues,
+
+        $IgnoredPatterns
     )
 
-    if ($null -eq $IgnoredValues) {
-        return $false
-    }
+    if ($null -ne $IgnoredValues) {
+        foreach ($ignoredValue in @($IgnoredValues)) {
+            if ($null -eq $Value -and $null -eq $ignoredValue) {
+                return $true
+            }
 
-    $ignoredValuesArray = @($IgnoredValues)
-    if ($ignoredValuesArray.Count -eq 0) {
-        return $false
-    }
-
-    foreach ($ignoredValue in $ignoredValuesArray) {
-        if ($null -eq $Value -and $null -eq $ignoredValue) {
-            return $true
+            if ($null -ne $Value -and $Value -eq $ignoredValue) {
+                return $true
+            }
         }
+    }
 
-        if ($null -ne $Value -and $Value -eq $ignoredValue) {
-            return $true
+    if ($null -ne $IgnoredPatterns -and $Value -is [string]) {
+        foreach ($ignoredPattern in @($IgnoredPatterns)) {
+            if ([regex]::IsMatch($Value, [string]$ignoredPattern)) {
+                return $true
+            }
         }
     }
 
@@ -637,7 +664,7 @@ function Update-JsonFile {
     )
 
     $inputFile = Read-JsonTextFile -FilePath $SourceFilePath
-    $document = $JsonSerializer.DeserializeObject($inputFile.Content)
+    $document = $JsonSerializer.DeserializeObject((Remove-JsonTrailingCommas -Content $inputFile.Content))
     $changed = $false
 
     foreach ($rule in $Rules) {
@@ -652,6 +679,7 @@ function Update-JsonFile {
         $sourceTokens = ConvertFrom-JsonPath -Path $rule.sourcePath
         $targetTokens = ConvertFrom-JsonPath -Path $rule.targetPath
         $ignoredValues = Get-OptionalRuleProperty -Rule $rule -PropertyName "ignoreValues"
+        $ignoredPatterns = Get-OptionalRuleProperty -Rule $rule -PropertyName "ignorePatterns"
         $sourceWildcardCount = Get-WildcardCount -Tokens $sourceTokens
         $targetWildcardCount = Get-WildcardCount -Tokens $targetTokens
 
@@ -667,7 +695,7 @@ function Update-JsonFile {
             }
 
             foreach ($match in $jsonMatches) {
-                if (Test-IgnoredRuleValue -Value $match.Value -IgnoredValues $ignoredValues) {
+                if (Test-IgnoredRuleValue -Value $match.Value -IgnoredValues $ignoredValues -IgnoredPatterns $ignoredPatterns) {
                     continue
                 }
 
@@ -686,7 +714,7 @@ function Update-JsonFile {
             continue
         }
 
-        if (Test-IgnoredRuleValue -Value $result.Value -IgnoredValues $ignoredValues) {
+        if (Test-IgnoredRuleValue -Value $result.Value -IgnoredValues $ignoredValues -IgnoredPatterns $ignoredPatterns) {
             continue
         }
 

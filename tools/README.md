@@ -38,6 +38,7 @@ Notes:
 * `rules` is required and is executed in order for that file
 * `targetPath` is optional; if omitted, the source file is updated in place
 * `ignoreValues` is optional per rule; matching values are skipped and not copied
+* `ignorePatterns` is optional per rule; string values matching one of these regular expressions are skipped and not copied
 * `replaceFromMap` is optional per rule and selects one map from the file passed via `-ValueMapFile`
 * environment variables can be used in `path` and `targetPath` via `${env:NAME}`
 * the root project rule file uses `${env:MDTVTYCN_DB_PATH}`
@@ -62,14 +63,14 @@ Example:
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\tools\json-copy.ps1 `
   -RuleFile ".\tools\json-copy.rules.sample.json" `
-  -ValueMapFile ".\tools\json-copy.value-maps.sample.json" `
+  -ValueMapFile "json-copy.value-maps.sample.json" `
   -Indented
 ```
 
 Parameters:
 
 * `-RuleFile` JSON file containing the file entries and rules
-* `-ValueMapFile` optional JSON file containing named replacement maps
+* `-ValueMapFile` optional JSON file containing named replacement maps; relative paths are resolved relative to the rule file
 * `-Indented` optional, writes formatted JSON with indentation
 * `-WhatIf` optional, shows what would be written without changing files
 
@@ -80,7 +81,8 @@ Behavior:
 * array paths like `$.items[0].id` are supported
 * wildcard array paths like `$.data[*]._comment` are supported
 * if a `sourcePath` cannot be found, the script writes a warning and continues with the next rule
-* if a source value matches `ignoreValues`, that copy operation is skipped
+* if a source value matches `ignoreValues` or `ignorePatterns`, that copy operation is skipped
+* trailing commas in source files (e.g. `[ {...}, ]`) are tolerated
 * if `replaceFromMap` is configured and a matching entry exists in the selected map, the mapped value is written instead of the original value
 
 Quick test:
@@ -88,7 +90,7 @@ Quick test:
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\tools\json-copy.ps1 `
   -RuleFile ".\tools\json-copy.rules.sample.json" `
-  -ValueMapFile ".\tools\json-copy.value-maps.sample.json" `
+  -ValueMapFile "json-copy.value-maps.sample.json" `
   -Indented
 ```
 
@@ -139,4 +141,6 @@ Behavior:
 
 * backup source is `targetPath` when configured, otherwise `path`
 * duplicate source files are added only once
+* missing source files (e.g. `targetPath` files before the first run) are skipped with a warning
+* if no source file exists, no archive is created and the script exits successfully
 * relative archive paths match the selected configured backup path where possible
