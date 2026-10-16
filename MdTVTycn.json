@@ -6,7 +6,11 @@
       "rules": [
         {
           "sourcePath": "$.data[*]._comment",
-          "targetPath": "$.data[*].Name"
+          "targetPath": "$.data[*].Name",
+          "ignoreValues": [
+            "UNREAL",
+            ""
+          ]
         }
       ]
     },
@@ -21,6 +25,9 @@
           "ignoreValues": [
             "UNREAL",
             "---"
+          ],
+          "ignorePatterns": [
+            " \\((Series|Film)\\)$"
           ]
         },
         {

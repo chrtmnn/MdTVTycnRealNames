@@ -75,6 +75,13 @@ Ohne eingerückte JSON-Ausgabe:
 
     run-mdtvtycn-update.bat --no-indent
 
+### Nach einem Spiel-Update erneut ausführen
+
+Die angepassten Dateien im `MOD`-Ordner sind eine Kopie der Spieldaten zum Zeitpunkt der Ausführung. Nach jedem Update
+von Mad Television Tycoon solltest du `run-mdtvtycn-update.bat` daher erneut ausführen. Sonst fehlen im Spiel neue
+Filme, Serien oder SchauspielerInnen sowie Korrekturen aus dem Update. Am besten verwendest du dafür immer die neueste
+Version dieses Tools.
+
 ### Parameter
 
     run-mdtvtycn-update.bat [PFAD_ZUR_DATENBANK] [--backup] [--no-pause] [--no-indent] [--help]

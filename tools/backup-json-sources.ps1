@@ -122,8 +122,11 @@ foreach ($fileEntry in $fileEntries) {
 
     $sourcePath = Expand-ConfigEnvironmentVariables -InputText $configuredPath
     $resolvedSourceFilePath = Resolve-ConfigPath -ConfigFilePath $RuleFile -ConfiguredPath $sourcePath
+    # A missing source is not an error: on the first run, the targetPath files
+    # do not exist yet, so there is nothing to back up for this entry.
     if (-not (Test-Path -LiteralPath $resolvedSourceFilePath -PathType Leaf)) {
-        throw "Configured backup source not found: $resolvedSourceFilePath"
+        Write-Warning "Backup source not found, skipping: $resolvedSourceFilePath"
+        continue
     }
 
     if ($seenPaths.Add($resolvedSourceFilePath)) {
@@ -135,7 +138,8 @@ foreach ($fileEntry in $fileEntries) {
 }
 
 if ($backupItems.Count -eq 0) {
-    throw "No source files found to back up."
+    Write-Host "No source files found to back up. No archive created."
+    exit 0
 }
 
 if ($WhatIf) {
